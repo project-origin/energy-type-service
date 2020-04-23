@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 @app.route('/get-energy-type', methods=['GET'])
-def projects():
+def get_energy_type():
     """
     Query parameters:
         gsrn : str

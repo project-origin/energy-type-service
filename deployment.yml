@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: energy-type-deployment
+  namespace: project-origin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: energy-type-deployment
+  template:
+    metadata:
+      labels:
+        app: energy-type-deployment
+    spec:
+      containers:
+        - name: energy-type-container
+          image: projectorigin/energy-type-service:2118
+          ports:
+            - containerPort: 8765

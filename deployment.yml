@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: energy-type-container
-          image: projectorigin/energy-type-service:2118
+          image: projectorigin/energy-type-service:2157
           ports:
             - containerPort: 8765

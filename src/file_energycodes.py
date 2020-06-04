@@ -1,8 +1,8 @@
 import pandas as pd
 from hashlib import sha256
 
-from .exception import EnergyCodeNotFoundException
-from .settings import ENERGYCODE_FILE
+from exception import EnergyCodeNotFoundException
+from settings import ENERGYCODE_FILE
 
 def hash_gsrn(data):
 

@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, abort
 
-from .exception import EnergyCodeNotFoundException
-from .settings import ENERGYCODE_FILE
+from exception import EnergyCodeNotFoundException
+from settings import ENERGYCODE_FILE
 
 if ENERGYCODE_FILE:
     from file_energycodes import get_tech_fuel_code

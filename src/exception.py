@@ -1,3 +1,3 @@
 
-class EnergyCodeNotFoundException(Exception)
+class EnergyCodeNotFoundException(Exception):
     pass

@@ -10,6 +10,7 @@ gunicorn = "*"
 gevent = "*"
 eventlet = "*"
 flask = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"

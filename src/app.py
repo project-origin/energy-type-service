@@ -33,7 +33,7 @@ def get_energy_type():
         })
 
     except EnergyCodeNotFoundException:
-        return 'Could not resolve gsrn', 404
+        return f'Could not resolve gsrn {gsrn}', 404
 
 if __name__ == '__main__':
     app.run(port=8765)

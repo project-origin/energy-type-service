@@ -1,0 +1,3 @@
+
+class EnergyCodeNotFoundException(Exception):
+    pass

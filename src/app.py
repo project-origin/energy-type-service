@@ -1,6 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 
-from energycodes import get_random_combination
+from exception import EnergyCodeNotFoundException
+from settings import ENERGYCODE_FILE
+
+if ENERGYCODE_FILE:
+    from file_energycodes import get_tech_fuel_code
+else:
+    from random_energycodes import get_tech_fuel_code
 
 
 app = Flask(__name__)
@@ -18,15 +24,16 @@ def get_energy_type():
     """
     gsrn = request.args.get('gsrn')
 
-    # TODO Take GSRN into account...
+    try:
+        tech_code, fuel_code = get_tech_fuel_code(gsrn)
 
-    tech_code, fuel_code = get_random_combination()
+        return jsonify({
+            'technologyCode': tech_code,
+            'fuelCode': fuel_code,
+        })
 
-    return jsonify({
-        'technologyCode': tech_code,
-        'fuelCode': fuel_code,
-    })
-
+    except EnergyCodeNotFoundException:
+        return f'Could not resolve gsrn {gsrn}', 404
 
 if __name__ == '__main__':
     app.run(port=8765)

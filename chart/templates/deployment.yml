@@ -12,8 +12,20 @@ spec:
       labels:
         app: energy-type-deployment
     spec:
+      volumes:
+        - name: energy-volume
+          azureFile:
+            secretName: energy-type-secret
+            shareName: energy-type-share
+            readOnly: false
       containers:
         - name: energy-type-container
           image: projectorigin/energy-type-service:{{ .Values.tag }}
           ports:
             - containerPort: 8765
+          envFrom:
+            - configMapRef:
+                name: energy-type-config
+          volumeMounts:
+            - name: energy-volume
+              mountPath: /mnt/energy

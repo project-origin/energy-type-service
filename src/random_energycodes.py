@@ -53,7 +53,7 @@ combinations += other_combinations * 10
 combinations += thermal_combinations
 
 
-def get_random_combination():
+def get_tech_fuel_code(gsrn):
     """
     :rtype: (str, str)
     :return: Tuple of (technologyCode, fuelCode)

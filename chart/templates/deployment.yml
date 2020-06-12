@@ -21,7 +21,6 @@ spec:
       containers:
         - name: energy-type-container
           image: projectorigin/energy-type-service:{{ .Values.tag }}
-          imagePullPolicy: Always
           ports:
             - containerPort: 8765
           envFrom:

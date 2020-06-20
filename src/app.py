@@ -1,7 +1,7 @@
 import logging
 from flask import Flask, request, jsonify
-from opencensus.trace import config_integration
-from opencensus.ext.azure.log_exporter import AzureLogHandler
+# from opencensus.trace import config_integration
+# from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace.samplers import ProbabilitySampler
@@ -32,13 +32,13 @@ if AZURE_APP_INSIGHTS_CONN_STRING:
         envelope.data.baseData.cloud_roleName = PROJECT_NAME
         envelope.tags['ai.cloud.role'] = PROJECT_NAME
 
-    handler = AzureLogHandler(
-        connection_string=AZURE_APP_INSIGHTS_CONN_STRING,
-        export_interval=5.0,
-    )
-    handler.add_telemetry_processor(__telemetry_processor)
-    handler.setLevel(logging.DEBUG)
-    app.logger.addHandler(handler)
+    # handler = AzureLogHandler(
+    #     connection_string=AZURE_APP_INSIGHTS_CONN_STRING,
+    #     export_interval=5.0,
+    # )
+    # handler.add_telemetry_processor(__telemetry_processor)
+    # handler.setLevel(logging.DEBUG)
+    # app.logger.addHandler(handler)
 
     exporter = AzureExporter(connection_string=AZURE_APP_INSIGHTS_CONN_STRING)
     exporter.add_telemetry_processor(__telemetry_processor)
@@ -59,6 +59,8 @@ def get_energy_type():
     """
     gsrn = request.args.get('gsrn')
 
+    0/0
+
     try:
         tech_code, fuel_code = get_tech_fuel_code(gsrn)
 
@@ -68,11 +70,6 @@ def get_energy_type():
             'fuelCode': fuel_code,
         })
     except EnergyCodeNotFoundException:
-        logging.exception(
-            msg=f'Could not resolve energy type for GSRN {gsrn}',
-            extra={'custom_dimensions': {'gsrn': gsrn}},
-        )
-
         return jsonify({
             'success': False,
             'message': f'Could not resolve energy type for GSRN {gsrn}',

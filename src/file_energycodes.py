@@ -4,8 +4,8 @@ from hashlib import sha256
 from exception import EnergyCodeNotFoundException
 from settings import ENERGYCODE_FILE
 
-def hash_gsrn(data):
 
+def hash_gsrn(data):
     x = str(data).encode()
 
     for i in range(1000):
@@ -21,13 +21,12 @@ def get_tech_fuel_code(gsrn):
     """
 
     hashed_gsrn = hash_gsrn(gsrn)
-    df = pd.read_parquet(ENERGYCODE_FILE)
 
-    if hashed_gsrn in df.index:
+    with open(ENERGYCODE_FILE, 'rb') as f:
+        df = pd.read_parquet(f)
 
-        row = df.loc[hashed_gsrn]
-
-        return row.tech_code, row.fuel_code
-
-    else:
-        raise EnergyCodeNotFoundException()
+        if hashed_gsrn in df.index:
+            row = df.loc[hashed_gsrn]
+            return row.tech_code, row.fuel_code
+        else:
+            raise EnergyCodeNotFoundException()

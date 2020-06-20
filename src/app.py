@@ -62,7 +62,6 @@ def get_energy_type():
     gsrn = request.args.get('gsrn')
 
     try:
-        0/0
         tech_code, fuel_code = get_tech_fuel_code(gsrn)
 
         return jsonify({

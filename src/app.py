@@ -70,9 +70,7 @@ def get_energy_type():
     except EnergyCodeNotFoundException:
         logging.exception(
             msg=f'Could not resolve energy type for GSRN {gsrn}',
-            custom_dimensions={
-                'gsrn': gsrn,
-            }
+            extra={'custom_dimensions': {'gsrn': gsrn}},
         )
 
         return jsonify({

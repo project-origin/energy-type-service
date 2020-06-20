@@ -25,6 +25,8 @@ spec:
             - containerPort: 8765
           envFrom:
             - configMapRef:
+                name: namespace-config
+            - configMapRef:
                 name: energy-type-config
           volumeMounts:
             - name: energy-volume

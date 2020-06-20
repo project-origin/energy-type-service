@@ -12,6 +12,8 @@ eventlet = "*"
 flask = "*"
 pandas = "*"
 pyarrow = "*"
+opencensus-ext-flask = "*"
+opencensus-ext-azure = "*"
 
 [requires]
 python_version = "3.7"

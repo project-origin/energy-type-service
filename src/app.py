@@ -1,10 +1,8 @@
 import logging
 from flask import Flask, request, jsonify
-# from opencensus.trace import config_integration
-# from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
-from opencensus.trace.samplers import ProbabilitySampler
+from opencensus.trace.samplers import AlwaysOnSampler
 
 from exception import EnergyCodeNotFoundException
 from settings import (
@@ -32,19 +30,14 @@ if AZURE_APP_INSIGHTS_CONN_STRING:
         envelope.data.baseData.cloud_roleName = PROJECT_NAME
         envelope.tags['ai.cloud.role'] = PROJECT_NAME
 
-    # handler = AzureLogHandler(
-    #     connection_string=AZURE_APP_INSIGHTS_CONN_STRING,
-    #     export_interval=5.0,
-    # )
-    # handler.add_telemetry_processor(__telemetry_processor)
-    # handler.setLevel(logging.DEBUG)
-    # app.logger.addHandler(handler)
-
     exporter = AzureExporter(connection_string=AZURE_APP_INSIGHTS_CONN_STRING)
     exporter.add_telemetry_processor(__telemetry_processor)
-    sampler = ProbabilitySampler(1.0)
 
-    opencensus = FlaskMiddleware(app, sampler=sampler, exporter=exporter)
+    FlaskMiddleware(
+        app=app,
+        sampler=AlwaysOnSampler(),
+        exporter=exporter,
+    )
 
 
 @app.route('/get-energy-type', methods=['GET'])

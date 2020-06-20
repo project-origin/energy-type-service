@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, abort
 from exception import EnergyCodeNotFoundException
 from settings import ENERGYCODE_FILE
 
+
 if ENERGYCODE_FILE:
     from file_energycodes import get_tech_fuel_code
 else:
@@ -28,12 +29,16 @@ def get_energy_type():
         tech_code, fuel_code = get_tech_fuel_code(gsrn)
 
         return jsonify({
+            'success': True,
             'technologyCode': tech_code,
             'fuelCode': fuel_code,
         })
-
     except EnergyCodeNotFoundException:
-        return f'Could not resolve gsrn {gsrn}', 404
+        return jsonify({
+            'success': False,
+            'message': f'Could not resolve energy type for GSRN {gsrn}',
+        })
+
 
 if __name__ == '__main__':
     app.run(port=8765)

@@ -75,7 +75,7 @@ def get_energy_type():
             'message': f'Could not resolve energy type for GSRN {gsrn}',
         })
     except Exception as e:
-        logging.exception(e)
+        logging.exception(f'Exception for GSRN: {gsrn}\n\n{e}')
         raise
 
 

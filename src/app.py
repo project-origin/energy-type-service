@@ -1,16 +1,18 @@
 import logging
+import datetime
 from flask import Flask, request, jsonify
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace.samplers import AlwaysOnSampler
 
-from emissions import get_emission_data
+from emissions import get_emission_data, get_residual_mix
 from exception import EnergyCodeNotFoundException
 from settings import (
     PROJECT_NAME,
     ENERGYCODE_FILE,
     AZURE_APP_INSIGHTS_CONN_STRING,
+    ISO_FORMAT,
 )
 
 
@@ -78,7 +80,7 @@ def get_energy_type():
 
 
 @app.route('/get-emissions', methods=['GET'])
-def get_emissions():
+def get_gsrn_emissions():
     """
     Returns emission data for a specific GSRN.
 
@@ -93,6 +95,27 @@ def get_emissions():
         'emissions': emissions if emissions else {},
     })
 
+
+@app.route('/residual-mix', methods=['GET'])
+def get_mix_emissions():
+    """
+    Returns emissions data for the residual mix in the grid
+
+    Takes 'sector' as query parameter.
+    Takes 'begin_from' as query parameter.
+    Takes 'begin_to' as query parameter.
+    """
+
+    sector = request.args.get('sector')
+    begin_from = datetime.datetime.strptime(request.args.get('begin_from'), ISO_FORMAT)
+    begin_to = datetime.datetime.strptime(request.args.get('begin_to'), ISO_FORMAT)
+
+    mix = get_residual_mix(sector, begin_from, begin_to)
+
+    return jsonify({
+        'success': mix is not None,
+        'residual-mix': mix if mix else {},
+    })
 
 if __name__ == '__main__':
     app.run(port=8765)

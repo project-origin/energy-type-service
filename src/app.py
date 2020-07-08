@@ -106,7 +106,7 @@ def get_mix_emissions():
     Takes 'begin_to' as query parameter.
     """
 
-    sectors = request.args.get('sectors').split(',')
+    sectors = request.args.getlist('sector')
     begin_from = datetime.datetime.strptime(request.args.get('begin_from'), ISO_FORMAT)
     begin_to = datetime.datetime.strptime(request.args.get('begin_to'), ISO_FORMAT)
 

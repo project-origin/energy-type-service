@@ -63,7 +63,7 @@ def get_residual_mix(sectors, begin_from, begin_to):
             if ts not in res:
                 res[ts] = {
                     'timestamp_utc': ts, 
-                    'sector': sector,
+                    'sector': row['sector'],
                     'parts': []
                     }
                 

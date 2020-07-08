@@ -106,11 +106,11 @@ def get_mix_emissions():
     Takes 'begin_to' as query parameter.
     """
 
-    sector = request.args.get('sector')
+    sectors = request.args.get('sectors').split(',')
     begin_from = datetime.datetime.strptime(request.args.get('begin_from'), ISO_FORMAT)
     begin_to = datetime.datetime.strptime(request.args.get('begin_to'), ISO_FORMAT)
 
-    mix = get_residual_mix(sector, begin_from, begin_to)
+    mix = get_residual_mix(sectors, begin_from, begin_to)
 
     return jsonify({
         'success': mix is not None,

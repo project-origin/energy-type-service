@@ -37,13 +37,13 @@ def get_emission_data(gsrn):
             None
 
 
-def get_residual_mix(sector, begin_from, begin_to):
+def get_residual_mix(sectors, begin_from, begin_to):
     """
     Returns a list of emissions for the given sector between the dates.
 
     All values are returned in g/Wh
 
-    :param str sector: The sector (price-zone) where the measurement occurred.
+    :param list[str] sectors: List of the sectors (price-zone) to filter on.
     :param datetime.datetime begin_from: timestamp inclusive
     :param datetime.datetime begin_to: timestamp exclusive
 
@@ -54,7 +54,7 @@ def get_residual_mix(sector, begin_from, begin_to):
 
         res = {}
 
-        df_loc = df_read.loc[(df_read['sector'] == sector) & (df_read['timestamp_utc'] >= begin_from) & (df_read['timestamp_utc'] < begin_to)]
+        df_loc = df_read.loc[(df_read['sector'].isin(sectors)) & (df_read['timestamp_utc'] >= begin_from) & (df_read['timestamp_utc'] < begin_to)]
 
         for index, row in df_loc.iterrows():
             

@@ -5,7 +5,7 @@ from settings import E18_EMISSION_FILE, MIX_FILE
 from util import hash_gsrn
 
 
-HEADERS = ['timestamp_utc','sector', 'technology','share']
+HEADERS = ['timestamp_utc','sector', 'technology','share', 'amount']
 
 
 def get_emission_data(gsrn):
@@ -59,16 +59,17 @@ def get_residual_mix(sectors, begin_from, begin_to):
         for index, row in df_loc.iterrows():
             
             ts = row['timestamp_utc'].isoformat()
-            
-            if ts not in res:
-                res[ts] = {
+
+            ts_obj = res.setdefault(ts, 
+                  {
                     'timestamp_utc': ts, 
                     'sector': row['sector'],
+                    'amount': 0, 
                     'parts': []
-                    }
+                })
                 
-            ts_obj = res[ts]
-            
+            ts_obj['amount'] += row['amount']
+
             emission = {}
             part = {
                 'share': row['share'],
@@ -85,7 +86,6 @@ def get_residual_mix(sectors, begin_from, begin_to):
                 
         result_list = [b for b in res.values()]
 
-
         for obj in result_list:
             
             mix = {}
@@ -94,10 +94,8 @@ def get_residual_mix(sectors, begin_from, begin_to):
                 share = part['share']
                 
                 for key in part['emissions']:
-                    if key in mix:
-                        mix[key] += part['emissions'][key] * share
-                    else:
-                        mix[key] = part['emissions'][key] * share
+                    mix.setdefault(key, 0)
+                    mix[key] += part['emissions'][key] * share
             
             obj['mix_emissions'] = mix
 

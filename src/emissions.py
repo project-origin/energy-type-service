@@ -39,7 +39,7 @@ def get_emission_data(gsrn):
 
 def get_residual_mix(sectors, begin_from, begin_to):
     """
-    Returns a list of emissions for the given sector between the dates.
+    Returns a json list of emissions for the given sector between the dates.
 
     All values are returned in g/Wh
 
@@ -51,52 +51,10 @@ def get_residual_mix(sectors, begin_from, begin_to):
     
     with open(MIX_FILE, 'rb') as f:
         df_read = pd.read_parquet(f)
+        
+        df_loc = df_read.loc[(df_read['sector'].isin(sectors) & (df_read['timestamp_utc'] >= begin_from) & (df_read['timestamp_utc'] < begin_to)]
 
-        res = {}
+        lst = df_loc['content'].tolist()
+        json_str = '[' + ','.join(lst) + ']'
 
-        df_loc = df_read.loc[(df_read['sector'].isin(sectors)) & (df_read['timestamp_utc'] >= begin_from) & (df_read['timestamp_utc'] < begin_to)]
-
-        for index, row in df_loc.iterrows():
-            
-            ts = row['timestamp_utc'].isoformat()
-
-            ts_obj = res.setdefault(ts, 
-                  {
-                    'timestamp_utc': ts, 
-                    'sector': row['sector'],
-                    'amount': 0, 
-                    'parts': []
-                })
-                
-            ts_obj['amount'] += row['amount']
-
-            emission = {}
-            part = {
-                'share': row['share'],
-                'technology': row['technology'],   
-                'emissions': emission
-            }
-            
-            ts_obj['parts'].append(part)
-            
-            for key in df_loc:
-                if key not in HEADERS:
-                    if row[key] != 0:
-                        emission[key] = row[key]
-                
-        result_list = [b for b in res.values()]
-
-        for obj in result_list:
-            
-            mix = {}
-            
-            for part in obj['parts']:
-                share = part['share']
-                
-                for key in part['emissions']:
-                    mix.setdefault(key, 0)
-                    mix[key] += part['emissions'][key] * share
-            
-            obj['mix_emissions'] = mix
-
-        return result_list
+        return json_str

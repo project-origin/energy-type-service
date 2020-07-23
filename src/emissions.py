@@ -54,6 +54,8 @@ def get_residual_mix(sectors, begin_from, begin_to):
 
         df_loc = df_read.loc[(df_read['sector'].isin(sectors) & (df_read['timestamp_utc'] >= begin_from) & (df_read['timestamp_utc'] < begin_to)]
 
+        df_loc = df_loc.sort_values(['timestamp_utc', 'sector'])
+
         json_str =  df_loc.to_json(orient='records', date_format='iso')
 
         return json_str

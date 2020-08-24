@@ -1,5 +1,8 @@
+import ujson
 import logging
-import datetime
+import flask.json
+from flask import Response
+from datetime import datetime, timezone
 from flask import Flask, request, jsonify
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
@@ -12,7 +15,6 @@ from settings import (
     PROJECT_NAME,
     ENERGYCODE_FILE,
     AZURE_APP_INSIGHTS_CONN_STRING,
-    ISO_FORMAT,
 )
 
 
@@ -20,6 +22,10 @@ if ENERGYCODE_FILE:
     from file_energycodes import get_tech_fuel_code
 else:
     from random_energycodes import get_tech_fuel_code
+
+
+# Monkeypatch Flask's JSON dumping using UJSON for speed
+# flask.json.dumps = lambda obj, *args, **kwargs: ujson.dumps(obj)
 
 
 app = Flask(__name__)
@@ -88,7 +94,20 @@ def get_gsrn_emissions():
     """
     gsrn = request.args.get('gsrn')
 
+    gsrn = '570715000000065408'
+
     emissions = get_emission_data(gsrn)
+
+    # emissions = {
+    #     "CO": 1,
+    #     "CH4": 2,
+    #     "CO2": 3,
+    #     "N2O": 4,
+    #     "NOx": 5,
+    #     "SO2": 6,
+    #     "NMVOC": 7,
+    #     "particles": 8,
+    # }
 
     return jsonify({
         'success': emissions is not None,
@@ -107,15 +126,34 @@ def get_mix_emissions():
     """
 
     sectors = request.args.getlist('sector')
-    begin_from = datetime.datetime.strptime(request.args.get('begin_from'), ISO_FORMAT)
-    begin_to = datetime.datetime.strptime(request.args.get('begin_to'), ISO_FORMAT)
+    begin_from = _parse_input_datetime(request.args.get('begin_from'))
+    begin_to = _parse_input_datetime(request.args.get('begin_to'))
 
-    mix = get_residual_mix(sectors, begin_from, begin_to)
+    mix_json_str = get_residual_mix(sectors, begin_from, begin_to)
+    response_json = '''
+    {
+        "success": true,
+        "mix_emissions": %s
+    }''' % mix_json_str
 
-    return jsonify({
-        'success': mix is not None,
-        'residual-mix': mix if mix else {},
-    })
+    return Response(response_json, mimetype='application/json')
+
+    # return jsonify({
+    #     'success': mix is not None,
+    #     'mix_emissions': mix if mix else [],
+    # })
+
+
+def _parse_input_datetime(s):
+    """
+    :param str s:
+    :rtype: datetime
+    """
+    d = datetime.fromisoformat(s)
+    if d.utcoffset() is None:
+        d = d.replace(tzinfo=timezone.utc)
+    return d.astimezone(timezone.utc)
+
 
 if __name__ == '__main__':
     app.run(port=8765)

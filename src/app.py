@@ -93,22 +93,7 @@ def get_gsrn_emissions():
     Takes 'gsrn' as query parameter.
     """
     gsrn = request.args.get('gsrn')
-
-    gsrn = '570715000000065408'
-
     emissions = get_emission_data(gsrn)
-
-    # emissions = {
-    #     "CO": 1,
-    #     "CH4": 2,
-    #     "CO2": 3,
-    #     "N2O": 4,
-    #     "NOx": 5,
-    #     "SO2": 6,
-    #     "NMVOC": 7,
-    #     "particles": 8,
-    # }
-
     return jsonify({
         'success': emissions is not None,
         'emissions': emissions if emissions else {},

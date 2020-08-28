@@ -12,6 +12,7 @@ eventlet = "*"
 flask = "*"
 pandas = "*"
 pyarrow = "*"
+ujson = "*"
 opencensus-ext-flask = "*"
 opencensus-ext-azure = "*"
 

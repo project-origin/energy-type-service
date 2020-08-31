@@ -123,11 +123,6 @@ def get_mix_emissions():
 
     return Response(response_json, mimetype='application/json')
 
-    # return jsonify({
-    #     'success': mix is not None,
-    #     'mix_emissions': mix if mix else [],
-    # })
-
 
 def _parse_input_datetime(s):
     """

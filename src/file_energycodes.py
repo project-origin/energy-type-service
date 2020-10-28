@@ -23,17 +23,17 @@ def get_tech_fuel_code(gsrn):
             raise EnergyCodeNotFoundException()
 
 
-# def add_tech_fuel_code(gsrn, tech, fuel):
-#     """
-#     :rtype: (str, str)
-#     :return: Tuple of (technologyCode, fuelCode)
-#     """
+def add_tech_fuel_code(gsrn, tech, fuel):
+    """
+    :rtype: (str, str)
+    :return: Tuple of (technologyCode, fuelCode)
+    """
 
-#     with open(ENERGYCODE_FILE, 'rb') as f:
-#         df = pd.read_parquet(f)
+    with open(ENERGYCODE_FILE, 'rb') as f:
+        df = pd.read_parquet(f)
 
-#     hashed_gsrn = hash_gsrn(gsrn)
-#     df[hashed_gsrn] = {'tech_code': tech, 'fuel_code': fuel}
+    hashed_gsrn = hash_gsrn(gsrn)
+    df[hashed_gsrn] = {'tech_code': tech, 'fuel_code': fuel}
 
-#     with open(ENERGYCODE_FILE, 'wb') as f:
-#         df.to_parquet(ENERGYCODE_FILE)
+    with open(ENERGYCODE_FILE, 'wb') as f:
+        df.to_parquet(ENERGYCODE_FILE)

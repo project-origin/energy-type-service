@@ -19,9 +19,9 @@ from settings import (
 
 
 if ENERGYCODE_FILE:
-    from file_energycodes import get_tech_fuel_code
+    from file_energycodes import get_tech_fuel_code, add_tech_fuel_code
 else:
-    from random_energycodes import get_tech_fuel_code
+    from random_energycodes import get_tech_fuel_code, add_tech_fuel_code
 
 
 # Monkeypatch Flask's JSON dumping using UJSON for speed
@@ -83,6 +83,20 @@ def get_energy_type():
     except Exception as e:
         app.logger.exception(f'Exception for GSRN: {gsrn}\n\n{e}')
         raise
+
+
+@app.route('/add-energy-type', methods=['POST'])
+def add_energy_type():
+    """
+    ONLY AVAILABLE FOR DEVELOPING/TESTING USING fake-eloverblik!
+    """
+    add_tech_fuel_code(
+        gsrn=request.form['gsrn'],
+        tech=request.form['tech'],
+        fuel=request.form['fuel'],
+    )
+
+    return jsonify({'success': True})
 
 
 @app.route('/get-emissions', methods=['GET'])

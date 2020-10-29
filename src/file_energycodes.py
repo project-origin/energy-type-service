@@ -33,7 +33,7 @@ def add_tech_fuel_code(gsrn, tech, fuel):
         df = pd.read_parquet(f)
 
     hashed_gsrn = hash_gsrn(gsrn)
-    df[hashed_gsrn] = {'tech_code': tech, 'fuel_code': fuel}
+    df.loc[hashed_gsrn] = {'tech_code': tech, 'fuel_code': fuel}
 
     with open(ENERGYCODE_FILE, 'wb') as f:
         df.to_parquet(ENERGYCODE_FILE)

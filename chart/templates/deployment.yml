@@ -31,3 +31,10 @@ spec:
           volumeMounts:
             - name: energy-volume
               mountPath: /mnt/energy
+          resources:
+            requests:
+              memory: "2000Mi"
+              cpu: "1000m"
+            limits:
+              memory: "5000Mi"
+              cpu: "2000m"

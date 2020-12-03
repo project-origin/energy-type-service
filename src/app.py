@@ -15,6 +15,7 @@ from settings import (
     PROJECT_NAME,
     ENERGYCODE_FILE,
     AZURE_APP_INSIGHTS_CONN_STRING,
+    LOG_LEVEL,
 )
 
 
@@ -29,7 +30,7 @@ else:
 
 
 app = Flask(__name__)
-app.logger.setLevel(logging.DEBUG)
+app.logger.setLevel(LOG_LEVEL)
 
 
 # Setup logging using OpenCensus / Azure
@@ -45,7 +46,8 @@ if AZURE_APP_INSIGHTS_CONN_STRING:
         export_interval=5.0,
     )
     handler.add_telemetry_processor(__telemetry_processor)
-    handler.setLevel(logging.DEBUG)
+    handler.setLevel(LOG_LEVEL)
+    app.logger.setLevel(LOG_LEVEL)
     app.logger.addHandler(handler)
 
     exporter = AzureExporter(connection_string=AZURE_APP_INSIGHTS_CONN_STRING)

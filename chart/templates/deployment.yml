@@ -13,11 +13,17 @@ spec:
         app: energy-type-deployment
     spec:
       volumes:
+{{- if eq .Values.type "azureFile" }}
         - name: energy-volume
           azureFile:
-            secretName: energy-type-secret
-            shareName: energy-type-share
+            secretName: {{ .Values.secretName }}
+            shareName: {{ .Values.shareName }}
             readOnly: false
+{{- else if eq .Values.type "persistentVolumeClaim" }}
+        - name: energy-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.claimName }}
+{{- end }}
       containers:
         - name: energy-type-container
           image: projectorigin/energy-type-service:{{ .Values.tag }}
@@ -28,6 +34,15 @@ spec:
                 name: namespace-config
             - configMapRef:
                 name: energy-type-config
+{{- if ne .Values.type "none"}}
           volumeMounts:
             - name: energy-volume
               mountPath: /mnt/energy
+{{- end }}
+#          resources:
+#            requests:
+#              memory: "2000Mi"
+#              cpu: "1000m"
+#            limits:
+#              memory: "5000Mi"
+#              cpu: "2000m"

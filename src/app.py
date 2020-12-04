@@ -15,13 +15,14 @@ from settings import (
     PROJECT_NAME,
     ENERGYCODE_FILE,
     AZURE_APP_INSIGHTS_CONN_STRING,
+    LOG_LEVEL,
 )
 
 
 if ENERGYCODE_FILE:
-    from file_energycodes import get_tech_fuel_code
+    from file_energycodes import get_tech_fuel_code, add_tech_fuel_code
 else:
-    from random_energycodes import get_tech_fuel_code
+    from random_energycodes import get_tech_fuel_code, add_tech_fuel_code
 
 
 # Monkeypatch Flask's JSON dumping using UJSON for speed
@@ -29,7 +30,7 @@ else:
 
 
 app = Flask(__name__)
-app.logger.setLevel(logging.DEBUG)
+app.logger.setLevel(LOG_LEVEL)
 
 
 # Setup logging using OpenCensus / Azure
@@ -45,7 +46,8 @@ if AZURE_APP_INSIGHTS_CONN_STRING:
         export_interval=5.0,
     )
     handler.add_telemetry_processor(__telemetry_processor)
-    handler.setLevel(logging.DEBUG)
+    handler.setLevel(LOG_LEVEL)
+    app.logger.setLevel(LOG_LEVEL)
     app.logger.addHandler(handler)
 
     exporter = AzureExporter(connection_string=AZURE_APP_INSIGHTS_CONN_STRING)
@@ -85,6 +87,20 @@ def get_energy_type():
         raise
 
 
+@app.route('/add-energy-type', methods=['POST'])
+def add_energy_type():
+    """
+    ONLY AVAILABLE FOR DEVELOPING/TESTING USING fake-eloverblik!
+    """
+    add_tech_fuel_code(
+        gsrn=request.form['gsrn'],
+        tech=request.form['tech'],
+        fuel=request.form['fuel'],
+    )
+
+    return jsonify({'success': True})
+
+
 @app.route('/get-emissions', methods=['GET'])
 def get_gsrn_emissions():
     """
@@ -122,11 +138,6 @@ def get_mix_emissions():
     }''' % mix_json_str
 
     return Response(response_json, mimetype='application/json')
-
-    # return jsonify({
-    #     'success': mix is not None,
-    #     'mix_emissions': mix if mix else [],
-    # })
 
 
 def _parse_input_datetime(s):

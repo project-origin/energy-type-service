@@ -1,5 +1,8 @@
 
 
-
-
 tag: latest
+
+type: azureFile
+secretName: energy-type-secret
+shareName: energy-type-share
+claimName:

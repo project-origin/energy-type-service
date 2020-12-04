@@ -52,10 +52,26 @@ combinations += other_combinations * 10
 # Add and add the thermal plants.
 combinations += thermal_combinations
 
+# Manually added
+manual = {}
+
 
 def get_tech_fuel_code(gsrn):
     """
+    :param str gsrn:
     :rtype: (str, str)
     :return: Tuple of (technologyCode, fuelCode)
     """
-    return choice(combinations)
+    if gsrn in manual:
+        return manual[gsrn]
+    else:
+        return choice(combinations)
+
+
+def add_tech_fuel_code(gsrn, tech, fuel):
+    """
+    :param str gsrn:
+    :param str tech:
+    :param str fuel:
+    """
+    manual[gsrn] = (tech, fuel)
